@@ -145,8 +145,8 @@ class RobotFace:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         self.running = False
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    # Flinch on touch/click
+                if event.type == pygame.MOUSEBUTTONDOWN or getattr(event, 'type', None) == getattr(pygame, 'FINGERDOWN', None):
+                    # Flinch on touch/click, regardless of where it happens
                     if self.flinch_timer == 0:
                         self.pre_flinch_emotion = self.emotion
                     self.emotion = "surprised"

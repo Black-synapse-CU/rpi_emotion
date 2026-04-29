@@ -1,7 +1,9 @@
 import os
 os.environ['SDL_VIDEO_WINDOW_POS'] = "0,0"
 import pygame
-
+import time
+import socket
+import threading
 # Screen dimensions (common for 3.5" RPi screens)
 # XPT2046 screens are often 480x320 or 320x240
 WIDTH, HEIGHT = 480, 320

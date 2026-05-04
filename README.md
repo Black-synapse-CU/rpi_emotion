@@ -24,23 +24,30 @@ Touch screen configuration:
    git clone https://github.com/goodtft/LCD-show.git
    chmod -R 755 LCD-show
    cd LCD-show/
-   sudo ./LCD35-show
+   sudo ./LCD35-show    
    
 
 
 ## Setup
 
-1. Install dependencies:
+1. Activate the virtual environment:
+
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate 
+   ```
+
+2. Install dependencies:
    ```bash
    pip install -r requirements.txt
    ```
 
-2. Run the Face Client:
+3. Run the Face Client:
    ```bash
    python rpi_face/face_client.py
    ```
 
-3. (Optional) Run the Emotion Server:
+4. (Optional) Run the Emotion Server:
    ```bash
    python emotion_recognition/emotion_server.py
    ```
@@ -55,6 +62,7 @@ ssh student@[IP_ADDRESS]
 Activate the virtual environment:
 
 ```bash
+python3 -m venv venv
  source venv/bin/activate 
 ```
 

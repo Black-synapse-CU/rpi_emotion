@@ -85,6 +85,24 @@ class RobotFace:
             color = YELLOW
             pygame.draw.circle(self.screen, color, (x, y), size + 10, 5)
             pygame.draw.circle(self.screen, color, (x, y), size // 2)
+        elif emotion == "thinking":
+            color = CYAN
+            # Shift eyes up and to the right
+            pygame.draw.circle(self.screen, color, (x + 20, y - 20), size)
+            pygame.draw.circle(self.screen, WHITE, (x + 20 - size//3, y - 20 - size//3), size//4)
+        elif emotion == "listening":
+            color = (50, 255, 50) # Green
+            # Concentric rings
+            pygame.draw.circle(self.screen, color, (x, y), size, 4)
+            pygame.draw.circle(self.screen, color, (x, y), size - 15, 4)
+            pygame.draw.circle(self.screen, color, (x, y), size - 30)
+        elif emotion == "loading":
+            color = (255, 165, 0) # Orange
+            # Spinning arc
+            t = time.time() * 5
+            start_angle = t % 6.28
+            stop_angle = start_angle + 3.14
+            pygame.draw.arc(self.screen, color, (x - size, y - size, size * 2, size * 2), start_angle, stop_angle, 10)
         else: # neutral
             pygame.draw.circle(self.screen, color, (x, y), size)
             # Subtle inner glow
@@ -129,7 +147,7 @@ class RobotFace:
                 sock.settimeout(1.0)
                 data, addr = sock.recvfrom(1024)
                 cmd = data.decode("utf-8").strip().lower()
-                if cmd in ["happy", "sad", "angry", "neutral", "surprised", "blink"]:
+                if cmd in ["happy", "sad", "angry", "neutral", "surprised", "blink", "thinking", "listening", "loading"]:
                     self.update_emotion(cmd)
             except socket.timeout:
                 continue

@@ -24,8 +24,6 @@ Touch screen configuration:
    cd LCD-show/
    sudo ./LCD35-show    
    
-
-
 ## Setup
 
 1. Activate the virtual environment:
@@ -44,8 +42,6 @@ Touch screen configuration:
    ```bash
    python rpi_face/face_service.py
    ```
-
-
 
 ## Running on the pi 
 

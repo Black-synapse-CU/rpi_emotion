@@ -85,10 +85,8 @@ def _wrap_text(text, font, max_width):
 
 # ── Main loop ──────────────────────────────────────────────────────────
 def main():
-    # SDL framebuffer target — set FACE_FB=/dev/fb0 if on HDMI, /dev/fb1 for SPI
-    if sys.platform != "win32" and not os.environ.get("DISPLAY"):
-        os.environ.setdefault("SDL_VIDEODRIVER", "fbcon")
-        os.environ.setdefault("SDL_FBDEV", os.getenv("FACE_FB", "/dev/fb1"))
+    # Pygame 2 uses SDL2, which usually auto-detects kmsdrm or x11.
+    # If running headless, ensure you export DISPLAY=:0
 
     pygame.init()
     screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN)

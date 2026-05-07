@@ -2,8 +2,3 @@
 pygame
 fastapi
 uvicorn
-torch
-librosa
-transformers
-numpy
-soundfile

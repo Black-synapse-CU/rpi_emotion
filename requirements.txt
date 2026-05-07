@@ -7,4 +7,3 @@ librosa
 transformers
 numpy
 soundfile
-smbus2>=0.4.0

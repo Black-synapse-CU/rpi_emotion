@@ -10,9 +10,8 @@ This package contains the necessary files to run the emotion recognition and fac
 
 ## Contents
 
-- `rpi_face/`: Python script to display an interactive face using Pygame.
+- `rpi_face/`: Python script to display an interactive face using Pygame and FastAPI.
 - `emotion_recognition/`: FastAPI server for audio-based emotion recognition using Wav2Vec2.
-- `action_servos/`: Hardware control for PCA9685 servo drivers.
 
 ## Preinstalled requirements
 Driver for touch screen:
@@ -42,9 +41,9 @@ Touch screen configuration:
    pip install -r requirements.txt
    ```
 
-3. Run the Face Client:
+3. Run the Face Service:
    ```bash
-   python rpi_face/face_client.py
+   python rpi_face/face_service.py
    ```
 
 4. (Optional) Run the Emotion Server:
@@ -66,10 +65,10 @@ python3 -m venv venv
  source venv/bin/activate 
 ```
 
-Run the face client:
+Run the face service:
 ```bash
 export DISPLAY=:0
 export FULLSCREEN=true 
-python rpi_face/face_client.py
+python rpi_face/face_service.py
 ```
 

@@ -22,10 +22,10 @@ GRAY  = (80,  80,  80)
 BLUE  = (60,  80, 220)
 
 # ── Eye geometry ───────────────────────────────────────────────────────
-EYE_L  = (120, 108)
-EYE_R  = (360, 108)
-EYE_W  = 95
-EYE_H  = 65
+EYE_L  = (120, 115)
+EYE_R  = (360, 115)
+EYE_W  = 68
+EYE_H  = 42
 
 # ── Shared state ────────────────────────────────────────────────────────
 _lock       = threading.Lock()
@@ -61,13 +61,27 @@ def _run_api():
 
 # ── Helpers ────────────────────────────────────────────────────────────
 def _draw_eye(surf, center, rx, ry, color=CYAN):
-    if ry < 1:
+    if ry < 2:
         return
-    rect = pygame.Rect(center[0] - rx, center[1] - ry, rx * 2, ry * 2)
-    pygame.draw.ellipse(surf, color, rect)
-    # Flat-bottom half-ellipse: cover lower half with background
-    cover = pygame.Rect(center[0] - rx - 1, center[1], rx * 2 + 2, ry + 2)
-    pygame.draw.rect(surf, BG, cover)
+    cx, cy = int(center[0]), int(center[1])
+    # Crescent moon: polygon between outer and inner upper half-ellipses.
+    # Both share the same x-extent so tips meet, creating a pointed crescent.
+    inner_ry = max(2, int(ry * 0.55))
+    if inner_ry >= ry:
+        return
+    n = 48
+    outer = [
+        (cx + rx * math.cos(math.pi * i / n),
+         cy - ry * math.sin(math.pi * i / n))
+        for i in range(n + 1)
+    ]
+    inner = [
+        (cx + rx * math.cos(math.pi * (n - i) / n),
+         cy - inner_ry * math.sin(math.pi * (n - i) / n))
+        for i in range(n + 1)
+    ]
+    pts = [(int(x), int(y)) for x, y in outer + inner]
+    pygame.draw.polygon(surf, color, pts)
 
 
 def _wrap_text(text, font, max_width):

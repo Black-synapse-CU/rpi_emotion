@@ -204,13 +204,14 @@ def main():
             _draw_eye(screen, EYE_L, EYE_W, int(blink_ry))
             _draw_eye(screen, EYE_R, EYE_W, int(blink_ry))
 
-            heard = font_sm.render("I heard:", True, GRAY)
-            screen.blit(heard, (20, 208))
+            lbl = font_sm.render("I HEARD:", True, CYAN)
+            screen.blit(lbl, (WIDTH // 2 - lbl.get_width() // 2, 200))
+            pygame.draw.line(screen, GRAY, (20, 220), (WIDTH - 20, 220), 1)
 
             lines = _wrap_text(text or "...", font_md, WIDTH - 40)[:3]
             for i, line in enumerate(lines):
                 surf = font_md.render(line, True, WHITE)
-                screen.blit(surf, (20, 228 + i * 27))
+                screen.blit(surf, (WIDTH // 2 - surf.get_width() // 2, 228 + i * 27))
 
         # ── Thinking ───────────────────────────────────────────────────
         elif state == "thinking":
@@ -246,16 +247,14 @@ def main():
             mouth_ry  = max(2, int(speak_mouth_h))
             mouth_rx  = 46
 
+            # Rect centered on mouth_top so only the bottom arc is visible
             mouth_rect = pygame.Rect(
                 mouth_cx - mouth_rx,
-                mouth_top,
+                mouth_top - mouth_ry,
                 mouth_rx * 2,
                 mouth_ry * 2,
             )
-            pygame.draw.ellipse(screen, BG,   mouth_rect)       # dark interior
-            pygame.draw.ellipse(screen, CYAN, mouth_rect, 3)    # cyan outline
-
-            # Flat upper-lip line so the top doesn't bounce
+            pygame.draw.arc(screen, CYAN, mouth_rect, 0, math.pi, 3)
             pygame.draw.line(
                 screen, CYAN,
                 (mouth_cx - mouth_rx, mouth_top),

@@ -22,10 +22,10 @@ GRAY  = (80,  80,  80)
 BLUE  = (60,  80, 220)
 
 # ── Eye geometry ───────────────────────────────────────────────────────
-EYE_L  = (155, 148)
-EYE_R  = (325, 148)
-EYE_W  = 38
-EYE_H  = 38
+EYE_L  = (120, 108)
+EYE_R  = (360, 108)
+EYE_W  = 95
+EYE_H  = 65
 
 # ── Shared state ────────────────────────────────────────────────────────
 _lock       = threading.Lock()
@@ -65,6 +65,9 @@ def _draw_eye(surf, center, rx, ry, color=CYAN):
         return
     rect = pygame.Rect(center[0] - rx, center[1] - ry, rx * 2, ry * 2)
     pygame.draw.ellipse(surf, color, rect)
+    # Flat-bottom half-ellipse: cover lower half with background
+    cover = pygame.Rect(center[0] - rx - 1, center[1], rx * 2 + 2, ry + 2)
+    pygame.draw.rect(surf, BG, cover)
 
 
 def _wrap_text(text, font, max_width):
@@ -230,37 +233,38 @@ def main():
 
         # ── Speaking ───────────────────────────────────────────────────
         elif state == "speaking":
-            # Normal eyes with blink — slightly wider for engagement
-            _draw_eye(screen, EYE_L, EYE_W + 3, int(blink_ry) + 3)
-            _draw_eye(screen, EYE_R, EYE_W + 3, int(blink_ry) + 3)
+            _draw_eye(screen, EYE_L, EYE_W, int(blink_ry))
+            _draw_eye(screen, EYE_R, EYE_W, int(blink_ry))
 
-            # Two overlapping sine waves → natural, non-mechanical mouth rhythm
+            # Two overlapping sine waves for natural mouth rhythm
             speak_phase = (speak_phase + dt * 8.5) % (2 * math.pi)
             raw = (abs(math.sin(speak_phase)) * 0.65
                    + abs(math.sin(speak_phase * 1.73 + 1.1)) * 0.35)
-            target_h = raw * 22 + 3
-            speak_mouth_h += (target_h - speak_mouth_h) * min(1.0, dt * 16)
+            target_h = raw * 32 + 5
+            speak_mouth_h += (target_h - speak_mouth_h) * min(1.0, dt * 14)
 
-            # Mouth: top lip stays fixed, lower jaw drops
             mouth_cx = WIDTH // 2
-            mouth_top = 232          # upper lip y — fixed
-            mouth_ry  = max(2, int(speak_mouth_h))
-            mouth_rx  = 46
+            mouth_cy = 230
+            mouth_rx = 58
+            mouth_ry = max(4, int(speak_mouth_h))
 
-            # Rect centered on mouth_top so only the bottom arc is visible
+            # Dark interior + cyan outline oval
             mouth_rect = pygame.Rect(
                 mouth_cx - mouth_rx,
-                mouth_top - mouth_ry,
+                mouth_cy - mouth_ry,
                 mouth_rx * 2,
                 mouth_ry * 2,
             )
-            pygame.draw.arc(screen, CYAN, mouth_rect, 0, math.pi, 3)
-            pygame.draw.line(
-                screen, CYAN,
-                (mouth_cx - mouth_rx, mouth_top),
-                (mouth_cx + mouth_rx, mouth_top),
-                3,
-            )
+            pygame.draw.ellipse(screen, (8, 8, 8), mouth_rect)
+            pygame.draw.ellipse(screen, CYAN, mouth_rect, 3)
+            # Subtle upper-lip line when mouth is open
+            if mouth_ry > 10:
+                pygame.draw.line(
+                    screen, CYAN,
+                    (mouth_cx - mouth_rx + 6, mouth_cy - mouth_ry + 4),
+                    (mouth_cx + mouth_rx - 6, mouth_cy - mouth_ry + 4),
+                    2,
+                )
 
         pygame.display.flip()
 

@@ -36,7 +36,7 @@ api = FastAPI(title="Atlas Face")
 
 
 class StateUpdate(BaseModel):
-    state: str  # idle | listening | echo | thinking
+    state: str  # idle | listening | echo | thinking | speaking
     text: str = ""
 
 
@@ -113,6 +113,10 @@ def main():
     # Thinking dots
     dot_phase = 0.0
 
+    # Speaking mouth
+    speak_phase  = 0.0
+    speak_mouth_h = 2.0
+
     threading.Thread(target=_run_api, daemon=True).start()
 
     running = True
@@ -132,8 +136,8 @@ def main():
         screen.fill(BG)
         now = time.time()
 
-        # ── Blink (idle + echo only) ───────────────────────────────────
-        if state in ("idle", "echo"):
+        # ── Blink (idle + echo + speaking) ────────────────────────────
+        if state in ("idle", "echo", "speaking"):
             if now >= blink_next and blink_t == 0.0:
                 blink_t = BLINK_DUR
             if blink_t > 0.0:
@@ -222,6 +226,42 @@ def main():
                 offset = math.sin(dot_phase + i * (2 * math.pi / 3))
                 y = int(262 + offset * 14)
                 pygame.draw.circle(screen, BLUE, (WIDTH // 2 - 32 + i * 32, y), 9)
+
+        # ── Speaking ───────────────────────────────────────────────────
+        elif state == "speaking":
+            # Normal eyes with blink — slightly wider for engagement
+            _draw_eye(screen, EYE_L, EYE_W + 3, int(blink_ry) + 3)
+            _draw_eye(screen, EYE_R, EYE_W + 3, int(blink_ry) + 3)
+
+            # Two overlapping sine waves → natural, non-mechanical mouth rhythm
+            speak_phase = (speak_phase + dt * 8.5) % (2 * math.pi)
+            raw = (abs(math.sin(speak_phase)) * 0.65
+                   + abs(math.sin(speak_phase * 1.73 + 1.1)) * 0.35)
+            target_h = raw * 22 + 3
+            speak_mouth_h += (target_h - speak_mouth_h) * min(1.0, dt * 16)
+
+            # Mouth: top lip stays fixed, lower jaw drops
+            mouth_cx = WIDTH // 2
+            mouth_top = 232          # upper lip y — fixed
+            mouth_ry  = max(2, int(speak_mouth_h))
+            mouth_rx  = 46
+
+            mouth_rect = pygame.Rect(
+                mouth_cx - mouth_rx,
+                mouth_top,
+                mouth_rx * 2,
+                mouth_ry * 2,
+            )
+            pygame.draw.ellipse(screen, BG,   mouth_rect)       # dark interior
+            pygame.draw.ellipse(screen, CYAN, mouth_rect, 3)    # cyan outline
+
+            # Flat upper-lip line so the top doesn't bounce
+            pygame.draw.line(
+                screen, CYAN,
+                (mouth_cx - mouth_rx, mouth_top),
+                (mouth_cx + mouth_rx, mouth_top),
+                3,
+            )
 
         pygame.display.flip()
 
